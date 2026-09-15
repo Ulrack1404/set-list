@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Сет-лист</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --border: #e8e8e8;
+      --text: #1a1a1a;
+      --text-muted: #888;
+      --text-soft: #555;
+      --accent: #1a1a1a;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.45;
+      padding: 16px 12px 32px;
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding: 0 2px;
+    }
+
+    .header h1 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .header .count {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .search {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
+    .search input {
+      width: 100%;
+      padding: 10px 14px 10px 34px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      font-size: 0.95rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+      font-family: inherit;
+    }
+
+    .search input:focus {
+      border-color: #bbb;
+    }
+
+    .search input::placeholder {
+      color: #aaa;
+    }
+
+    .search::before {
+      content: '';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      transform: translateY(-50%);
+      background: #aaa;
+      -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") center/contain no-repeat;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") center/contain no-repeat;
+      pointer-events: none;
+    }
+
+    /* Фильтры */
+    .filters {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      min-width: 60px;
+      flex-shrink: 0;
+      font-weight: 500;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 0.82rem;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: all 0.12s;
+      user-select: none;
+      font-family: inherit;
+    }
+
+    .chip:hover {
+      border-color: #ccc;
+    }
+
+    .chip.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .chip.reset {
+      color: var(--text-muted);
+      border-style: dashed;
+    }
+
+    .reset-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: -6px;
+    }
+
+    /* Список */
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .song {
+      background: var(--surface);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+      transition: background 0.12s;
+      position: relative;
+    }
+
+    .song:hover {
+      background: #fafcff;
+    }
+
+    .song:active {
+      background: #f2f5f9;
+    }
+
+    .song::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%) rotate(45deg);
+      width: 6px;
+      height: 6px;
+      border-top: 1.5px solid #c5c5c5;
+      border-right: 1.5px solid #c5c5c5;
+      pointer-events: none;
+    }
+
+    .song-top {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      padding-right: 20px;
+    }
+
+    .song-num {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+      min-width: 18px;
+      flex-shrink: 0;
+      padding-top: 1px;
+    }
+
+    .song-name {
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: -0.005em;
+      word-break: break-word;
+      flex: 1;
+    }
+
+    .song-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 6px;
+      padding-left: 28px;
+      padding-right: 20px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+    }
+
+    .tag + .tag::before {
+      content: '·';
+      margin-right: 6px;
+      color: #ccc;
+    }
+
+    .tag-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-c0 { background: #ccc; }
+    .dot-c1 { background: #2e7d32; }
+    .dot-c2 { background: #c62828; }
+    .dot-c3 { background: #ef6c00; }
+    .dot-c4 { background: #0277bd; }
+    .dot-c5 { background: #5c6bc0; }
+    .dot-c6 { background: #8e24aa; }
+    .dot-c7 { background: #00838f; }
+    .dot-c8 { background: #6d4c41; }
+    .dot-c9 { background: #ad1457; }
+
+    .song-task {
+      padding-left: 28px;
+      padding-right: 20px;
+      font-size: 0.82rem;
+      color: var(--text-soft);
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+      margin-top: 2px;
+    }
+
+    .song-task::before {
+      content: '—';
+      color: #ccc;
+      flex-shrink: 0;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 48px 16px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ============ МОДАЛЬНАЯ КАРТОЧКА ============ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 22, 28, 0.45);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.22s ease, visibility 0.22s ease;
+      padding: 0;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: var(--surface);
+      width: 100%;
+      max-width: 560px;
+      max-height: 88vh;
+      overflow-y: auto;
+      border-radius: 20px 20px 0 0;
+      transform: translateY(20px);
+      transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+      padding: 20px 20px 28px;
+      position: relative;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0);
+    }
+
+    @media (min-width: 600px) {
+      .modal-overlay {
+        align-items: center;
+        padding: 20px;
+      }
+      .modal {
+        border-radius: 18px;
+        max-height: 82vh;
+        padding: 24px 24px 28px;
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: #f2f2f2;
+      color: #666;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-family: inherit;
+      transition: background 0.12s;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      background: #e6e6e6;
+    }
+
+    .modal-num {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .modal-title {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.015em;
+      line-height: 1.25;
+      padding-right: 40px;
+      margin-bottom: 20px;
+      word-break: break-word;
+    }
+
+    .detail-list {
+      display: flex;
+      flex-direction: column;
+      border-top: 1px solid var(--border);
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .detail-label {
+      color: var(--text-muted);
+      min-width: 100px;
+      flex-shrink: 0;
+      font-size: 0.82rem;
+      padding-top: 1px;
+      word-break: break-word;
+    }
+
+    .detail-value {
+      flex: 1;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    .detail-value.muted {
+      color: #aaa;
+    }
+
+    .detail-value .tag-dot {
+      margin-right: 6px;
+      vertical-align: middle;
+      position: relative;
+      top: -1px;
+    }
+
+    .detail-value.task {
+      color: var(--text-soft);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-nav {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 10px;
+      font-size: 0.85rem;
+      color: var(--text-soft);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.12s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-nav:hover:not(:disabled) {
+      border-color: #ccc;
+      color: var(--text);
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 12px 8px 24px; font-size: 14px; }
+      .header h1 { font-size: 1.05rem; }
+      .filter-label { min-width: 52px; font-size: 0.68rem; }
+      .chip { padding: 4px 10px; font-size: 0.78rem; }
+      .song { padding: 12px 14px; }
+      .song-name { font-size: 0.95rem; }
+      .song-meta, .song-task { padding-left: 24px; font-size: 0.75rem; }
+      .modal-title { font-size: 1.15rem; }
+      .detail-label { min-width: 84px; font-size: 0.78rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <h1>Сет-лист</h1>
+    <span class="count" id="countLabel"></span>
+  </div>
+
+  <div class="search">
+    <input type="text" id="searchInput" placeholder="Поиск..." autocomplete="off">
+  </div>
+
+  <div class="filters" id="filtersContainer"></div>
+
+  <div class="list" id="songsList"></div>
+
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <button class="modal-close" id="modalClose" aria-label="Закрыть">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  // ==================================================================
+  //  ДАННЫЕ ТАБЛИЦЫ
+  //  Вставьте таблицу из Excel как есть — разделитель табуляция.
+  //  Первая строка — заголовки. Все колонки обрабатываются автоматически.
+  //
+  //  Специальные заголовки (регистр не важен):
+  //    «№» или «#» или «id»   → номер в списке (не показывается в карточке)
+  //    «песня» / «название»   → название (заголовок карточки, поиск по нему)
+  //    «задачи» / «задача»    → отображается отдельной строкой под именем
+  //    «продолжительность» / «длительность» → в списке не показывается
+  //    остальные              → становятся тегами в списке и фильтрами
+  // ==================================================================
+  const RAW_TABLE_DATA = `№	песня	уже выступали	стиль	есть playback	Сделаны	В разработке	Задачи	Продолжительность
+1	Вступление Koff	 - 	тяжелая	 - 	 - 	 - 	сделать	 - 
+2	Mortal combat 	да	тяжелая	да	да	 - 	 - 	 - 
+3	Mission-Bill	 - 	средняя	да	да	 - 	 - 	 - 
+4	Palladio	да	тяжелая	да	да	 - 	 - 	 - 
+5	Ковбойская	 - 	легкая	да	в процессе	 - 	придумать как упростить. Добавить голос в минус	 - 
+6	Accelerate - Alec Koff	 - 	тяжелая	да	да	 - 	подумать про голос поверх. Добавить синт где один бас	 - 
+7	Mr. Claps	да	тяжелая	да	да	 - 	 - 	 - 
+8	Pink Floyd 	 - 	средняя	да	да	 - 	 - 	 - 
+9	Black and white	 - 	средняя	да	да	 - 	 - 	 - 
+10	Yakety Axe	 - 	легкая	да	да	 - 	 - 	 - 
+11	Симфония № 40	да	тяжелая	да	да	 - 	 - 	 - 
+12	Скерцо	да	средняя	да	да	 - 	 - 	 - 
+13	AM 1984 (80-е под зиверт)	 - 	средняя	 - 	 - 	да		 - 
+14	Hellmile - When strings...	 - 	тяжелая	 - 	 - 	да		 - 
+15	Такси	 - 	средняя	 - 	 - 	да		 - 
+16	Dump	 - 	тяжелая	 - 	 - 	да		 - `;
+
+  // ==================================================================
+  //  ПАРСЕР ТАБЛИЦЫ С АВТООПРЕДЕЛЕНИЕМ СТОЛБЦОВ
+  // ==================================================================
+  function normalizeValue(v) { 
+    if (v == null) return null;
+    const t = String(v).trim();
+    if (t === '' || t === '-' || t === '—' || t === '–') return null;
+    return t;
+  }
+
+  function normalizeHeader(h) {
+    return String(h || '').trim().toLowerCase();
+  }
+
+  // Определяем роль колонки по её заголовку
+  function detectRole(header) {
+    const h = normalizeHeader(header);
+    if (['№', '#', 'id', 'номер'].includes(h)) return 'id';
+    if (['песня', 'название', 'name', 'композиция'].includes(h)) return 'name';
+    if (['задачи', 'задача', 'task', 'заметки'].includes(h)) return 'task';
+    if (['продолжительность', 'длительность', 'duration', 'время'].includes(h)) return 'duration';
+    return 'filter'; // всё остальное — обычная колонка-фильтр/тег
+  }
+
+  // Формируем «человеческое» имя колонки из заголовка
+  function prettifyHeader(h) {
+    const t = String(h || '').trim();
+    if (!t) return '—';
+    return t.charAt(0).toUpperCase() + t.slice(1);
+  }
+
+  function parseRawTable(raw) {
+    const lines = raw.replace(/\r\n?/g, '\n').split('\n').filter(line => line.trim() !== '');
+    if (lines.length < 2) return { columns: [], songs: [] };
+
+    // Заголовки
+    const headerCells = lines[0].split('\t');
+    const columns = headerCells.map((h, i) => {
+      const label = String(h || '').trim() || `Колонка ${i + 1}`;
+      return {
+        index: i,
+        key: 'col_' + i,           // внутренний ключ
+        label: prettifyHeader(label),
+        rawLabel: label,
+        role: detectRole(label)    // id | name | task | duration | filter
+      };
+    });
+
+    // Песни
+    const songs = [];
+    for (const line of lines.slice(1)) {
+      const cells = line.split('\t');
+      const song = { __cells: [] };
+
+      columns.forEach(col => {
+        const rawVal = cells[col.index];
+        const val = normalizeValue(rawVal);
+        song[col.key] = val;
+        song.__cells.push(val);
+      });
+
+      // Определяем id и name
+      const idCol = columns.find(c => c.role === 'id');
+      const nameCol = columns.find(c => c.role === 'name');
+
+      let id = songs.length + 1;
+      if (idCol) {
+        const n = parseInt(song[idCol.key], 10);
+        if (!isNaN(n)) id = n;
+      }
+      let name = '';
+      if (nameCol) name = song[nameCol.key] || '';
+      if (!name) continue; // без названия — пропускаем
+
+      song.id = id;
+      song.name = name;
+      songs.push(song);
+    }
+
+    return { columns, songs };
+  }
+
+  const { columns, songs: songsData } = parseRawTable(RAW_TABLE_DATA);
+
+  // Колонки-фильтры (то, что реально может стать чипом)
+  const filterColumns = columns.filter(c => c.role === 'filter');
+  // Колонка-задача (если есть)
+  const taskColumn = columns.find(c => c.role === 'task');
+  // Колонка-название (для поиска)
+  const nameColumn = columns.find(c => c.role === 'name');
+  // Колонка-id
+  const idColumn = columns.find(c => c.role === 'id');
+
+  // ==================================================================
+  //  ДИНАМИЧЕСКИЕ ФИЛЬТРЫ ПО ЗНАЧЕНИЯМ
+  // ==================================================================
+  function buildFilterDefinitions() {
+    const defs = [];
+
+    filterColumns.forEach(col => {
+      const unique = new Set();
+      let hasEmpty = false;
+
+      songsData.forEach(song => {
+        const v = song[col.key];
+        if (v == null || v === '') {
+          hasEmpty = true;
+        } else {
+          unique.add(String(v));
+        }
+      });
+
+      const values = Array.from(unique);
+      const totalOptions = values.length + (hasEmpty ? 1 : 0);
+
+      // Один вариант и нет пустых — фильтр бесполезен
+      if (totalOptions <= 1) return;
+
+      const options = [{ value: null, label: 'Все' }];
+      values.sort((a, b) => a.localeCompare(b, 'ru'));
+      values.forEach(v => options.push({ value: v, label: v.charAt(0).toUpperCase() + v.slice(1) }));
+      if (hasEmpty) options.push({ value: '__empty__', label: '—' });
+
+      defs.push({
+        key: col.key,
+        label: col.label,
+        options: options
+      });
+    });
+
+    return defs;
+  }
+
+  const filterDefinitions = buildFilterDefinitions();
+
+  // ==================================================================
+  //  СОСТОЯНИЕ
+  // ==================================================================
+  const state = {
+    search: '',
+    filters: {},
+    openSongId: null
+  };
+  filterDefinitions.forEach(def => { state.filters[def.key] = null; });
+
+  // ==================================================================
+  //  DOM
+  // ==================================================================
+  const songsListEl = document.getElementById('songsList');
+  const searchInput = document.getElementById('searchInput');
+  const filtersContainer = document.getElementById('filtersContainer');
+  const countLabel = document.getElementById('countLabel');
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modalContent = document.getElementById('modalContent');
+  const modalClose = document.getElementById('modalClose');
+
+  // ==================================================================
+  //  ХЕЛПЕРЫ
+  // ==================================================================
+  function escapeHtml(text) {
+    if (text == null) return '';
+    const div = document.createElement('div');
+    div.textContent = String(text);
+    return div.innerHTML;
+  }
+
+  function matchesFilter(value, filterValue) {
+    if (filterValue == null) return true;
+    if (filterValue === '__empty__') return value == null || value === '';
+    return String(value) === filterValue;
+  }
+
+  function getFilteredSongs() {
+    return songsData.filter(song => {
+      if (state.search && !song.name.toLowerCase().includes(state.search.toLowerCase())) {
+        return false;
+      }
+      for (const [key, val] of Object.entries(state.filters)) {
+        if (!matchesFilter(song[key], val)) return false;
+      }
+      return true;
+    });
+  }
+
+  // ==================================================================
+  //  ЦВЕТА ТОЧЕК ДЛЯ КАЖДОЙ КОЛОНКИ
+  // ==================================================================
+  const dotColorMap = {};
+
+  function buildDotColorMaps() {
+    filterColumns.forEach(col => {
+      const map = new Map();
+      const seen = new Set();
+      songsData.forEach(song => {
+        const v = song[col.key];
+        const key = (v == null || v === '') ? '__empty__' : String(v);
+        if (!seen.has(key)) {
+          seen.add(key);
+          map.set(key, 'dot-c' + (map.size % 10));
+        }
+      });
+      dotColorMap[col.key] = map;
+    });
+  }
+  buildDotColorMaps();
+
+  function dotClass(colKey, value) {
+    const map = dotColorMap[colKey];
+    if (!map) return 'dot-c0';
+    const k = (value == null || value === '') ? '__empty__' : String(value);
+    return map.get(k) || 'dot-c0';
+  }
+
+  // ==================================================================
+  //  ТЕГИ ДЛЯ СПИСКА
+  //  Показываем значения колонок-фильтров в виде тегов.
+  // ==================================================================
+  function buildTags(song) {
+    const tags = [];
+    filterColumns.forEach(col => {
+      const v = song[col.key];
+      if (v == null || v === '') return;
+      tags.push({
+        dot: dotClass(col.key, v),
+        text: v
+      });
+    });
+    return tags;
+  }
+
+  // ==================================================================
+  //  РЕНДЕР ЭЛЕМЕНТА СПИСКА
+  // ==================================================================
+  function renderSong(song) {
+    const el = document.createElement('div');
+    el.className = 'song';
+    el.setAttribute('role', 'button');
+    el.setAttribute('tabindex', '0');
+    el.dataset.songId = song.id;
+
+    const tagsHtml = buildTags(song).map(t =>
+      `<span class="tag"><span class="tag-dot ${t.dot}"></span>${escapeHtml(t.text)}</span>`
+    ).join('');
+
+    // Задача (из колонки с ролью task)
+    let taskHtml = '';
+    if (taskColumn) {
+      const taskVal = song[taskColumn.key];
+      if (taskVal != null && taskVal.trim() !== '') {
+        taskHtml = `<div class="song-task">${escapeHtml(taskVal)}</div>`;
+      }
+    }
+
+    el.innerHTML = `
+      <div class="song-top">
+        <span class="song-num">${song.id}</span>
+        <span class="song-name">${escapeHtml(song.name)}</span>
+      </div>
+      ${tagsHtml ? `<div class="song-meta">${tagsHtml}</div>` : ''}
+      ${taskHtml}
+    `;
+
+    el.addEventListener('click', () => openModal(song.id));
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openModal(song.id);
+      }
+    });
+
+    return el;
+  }
+
+  // ==================================================================
+  //  РЕНДЕР СПИСКА
+  // ==================================================================
+  function renderList() {
+    const filtered = getFilteredSongs();
+    songsListEl.innerHTML = '';
+
+    countLabel.textContent = filtered.length === songsData.length
+      ? `${songsData.length} песен`
+      : `${filtered.length} из ${songsData.length}`;
+
+    if (filtered.length === 0) {
+      songsListEl.innerHTML = '<div class="empty">Ничего не найдено</div>';
+      return;
+    }
+
+    const list = document.createElement('div');
+    list.className = 'list';
+    filtered.forEach(song => list.appendChild(renderSong(song)));
+    songsListEl.appendChild(list);
+  }
+
+  // ==================================================================
+  //  РЕНДЕР ФИЛЬТРОВ
+  // ==================================================================
+  function renderFilters() {
+    filtersContainer.innerHTML = '';
+
+    filterDefinitions.forEach(def => {
+      const group = document.createElement('div');
+      group.className = 'filter-group';
+
+      const label = document.createElement('span');
+      label.className = 'filter-label';
+      label.textContent = def.label;
+      label.title = def.label;
+      group.appendChild(label);
+
+      const chips = document.createElement('div');
+      chips.className = 'chips';
+
+      def.options.forEach(opt => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'chip';
+        if (state.filters[def.key] === opt.value) chip.classList.add('active');
+        chip.textContent = opt.label;
+        chip.addEventListener('click', () => {
+          if (opt.value === null) {
+            state.filters[def.key] = null;
+          } else {
+            state.filters[def.key] = state.filters[def.key] === opt.value ? null : opt.value;
+          }
+          renderFilters();
+          renderList();
+        });
+        chips.appendChild(chip);
+      });
+
+      group.appendChild(chips);
+      filtersContainer.appendChild(group);
+    });
+
+    const hasActive = Object.values(state.filters).some(v => v !== null) || state.search;
+    if (hasActive) {
+      const resetRow = document.createElement('div');
+      resetRow.className = 'reset-row';
+      const resetBtn = document.createElement('button');
+      resetBtn.type = 'button';
+      resetBtn.className = 'chip reset';
+      resetBtn.textContent = 'Сбросить всё';
+      resetBtn.addEventListener('click', () => {
+        state.search = '';
+        searchInput.value = '';
+        Object.keys(state.filters).forEach(k => state.filters[k] = null);
+        renderFilters();
+        renderList();
+      });
+      resetRow.appendChild(resetBtn);
+      filtersContainer.appendChild(resetRow);
+    }
+  }
+
+  // ==================================================================
+  //  МОДАЛЬНОЕ ОКНО
+  //  Показываем ВСЕ колонки, кроме id и name (они в шапке).
+  // ==================================================================
+  function valueOrDash(value) {
+    if (value == null || (typeof value === 'string' && value.trim() === '')) {
+      return `<span class="muted">—</span>`;
+    }
+    return escapeHtml(value);
+  }
+
+  function renderColoredValue(colKey, value) {
+    if (value == null || value === '') {
+      return `<span class="tag-dot dot-c0"></span><span class="muted">нет</span>`;
+    }
+    return `<span class="tag-dot ${dotClass(colKey, value)}"></span>${escapeHtml(value)}`;
+  }
+
+  function renderDetailRow(label, valueHtml, extraClass = '') {
+    return `
+      <div class="detail-row">
+        <div class="detail-label">${escapeHtml(label)}</div>
+        <div class="detail-value ${extraClass}">${valueHtml}</div>
+      </div>
+    `;
+  }
+
+  function renderModalContent(song) {
+    const rows = [];
+
+    columns.forEach(col => {
+      if (col.role === 'id' || col.role === 'name') return;
+
+      const value = song[col.key];
+
+      if (col.role === 'task') {
+        rows.push(`
+          <div class="detail-row">
+            <div class="detail-label">${escapeHtml(col.label)}</div>
+            <div class="detail-value task">${valueOrDash(value)}</div>
+          </div>
+        `);
+      } else if (col.role === 'duration') {
+        rows.push(renderDetailRow(col.label, valueOrDash(value)));
+      } else {
+        // filter-колонка — с цветной точкой
+        rows.push(renderDetailRow(col.label, renderColoredValue(col.key, value)));
+      }
+    });
+
+    // Навигация
+    const filtered = getFilteredSongs();
+    const currentIndex = filtered.findIndex(s => s.id === song.id);
+    const prevSong = currentIndex > 0 ? filtered[currentIndex - 1] : null;
+    const nextSong = currentIndex >= 0 && currentIndex < filtered.length - 1 ? filtered[currentIndex + 1] : null;
+
+    modalContent.innerHTML = `
+      <div class="modal-num">№ ${song.id}</div>
+      <h2 class="modal-title">${escapeHtml(song.name)}</h2>
+      <div class="detail-list">
+        ${rows.join('')}
+      </div>
+      <div class="modal-actions">
+        <button class="btn-nav" id="prevBtn" ${!prevSong ? 'disabled' : ''}>← Пред.</button>
+        <button class="btn-nav" id="nextBtn" ${!nextSong ? 'disabled' : ''}>След. →</button>
+      </div>
+    `;
+
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    if (prevBtn && prevSong) prevBtn.addEventListener('click', () => openModal(prevSong.id));
+    if (nextBtn && nextSong) nextBtn.addEventListener('click', () => openModal(nextSong.id));
+  }
+
+  function openModal(songId) {
+    const song = songsData.find(s => s.id === songId);
+    if (!song) return;
+
+    state.openSongId = songId;
+    renderModalContent(song);
+
+    modalOverlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+
+    const modal = document.getElementById('modal');
+    if (modal) modal.scrollTop = 0;
+  }
+
+  function closeModal() {
+    modalOverlay.classList.remove('open');
+    state.openSongId = null;
+    document.body.style.overflow = '';
+  }
+
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) closeModal();
+  });
+
+  modalClose.addEventListener('click', closeModal);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalOverlay.classList.contains('open')) {
+      closeModal();
+    }
+  });
+
+  // ==================================================================
+  //  ПОИСК
+  // ==================================================================
+  searchInput.addEventListener('input', (e) => {
+    state.search = e.target.value.trim();
+    renderList();
+  });
+
+  // ==================================================================
+  //  ИНИЦИАЛИЗАЦИЯ
+  // ==================================================================
+  function init() {
+    renderFilters();
+    renderList();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
