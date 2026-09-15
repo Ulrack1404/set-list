@@ -694,7 +694,7 @@
 13	AM 1984 (80-е под зиверт)	 - 	средняя	 - 	 - 	 - 	 - 
 14	Hellmile - When strings...	 - 	тяжелая	 - 	 - 	 - 	 - 
 15	Такси	 - 	средняя	 - 	 - 	 - 	 - 
-16	Dump	 - 	тяжелая	 - 	 - 	 - 	 - `; 
+16	Dump	 - 	тяжелая	 - 	 - 	 - 	 - `;
 
   // ==================================================================
   //  ПАРСЕР ТАБЛИЦЫ
@@ -719,12 +719,17 @@
     return String(h || '').trim().toLowerCase();
   }
 
+  // Мягкое распознавание роли колонки — устойчиво к опечаткам и языку.
   function detectRole(header) {
     const h = normalizeHeader(header);
-    if (['№', '#', 'id', 'номер'].includes(h)) return 'id';
-    if (['песня', 'название', 'name', 'композиция'].includes(h)) return 'name';
-    if (['задачи', 'задача', 'task', 'заметки'].includes(h)) return 'task';
-    if (['продолжительность', 'длительность', 'duration', 'время'].includes(h)) return 'duration';
+    if (!h) return 'filter';
+    if (['№', '#', 'id', 'номер'].includes(h) || h === 'no' || h === 'no.') return 'id';
+    if (['песня', 'название', 'name', 'композиция', 'трек'].includes(h)) return 'name';
+    if (['продолжительность', 'длительность', 'duration', 'время', 'длина'].includes(h)) return 'duration';
+    // Мягкие проверки по подстроке
+    if (h.includes('задач') || h.includes('замет') || h.includes('task')) return 'task';
+    if (h.includes('песн') || h.includes('назван')) return 'name';
+    if (h.includes('продолж') || h.includes('длит') || h.includes('duration')) return 'duration';
     return 'filter';
   }
 
@@ -810,6 +815,10 @@
   filterColumns.forEach((col, i) => {
     columnColors[col.key] = COLUMN_PALETTE[i % COLUMN_PALETTE.length];
   });
+  // Цвет для колонки-задачи — свой отдельный, из палитры
+  if (taskColumn) {
+    columnColors[taskColumn.key] = COLUMN_PALETTE[filterColumns.length % COLUMN_PALETTE.length];
+  }
 
   function getColumnColor(colKey) {
     return columnColors[colKey] || COLUMN_PALETTE[0];
@@ -817,11 +826,12 @@
 
   // ==================================================================
   //  ДИНАМИЧЕСКИЕ ФИЛЬТРЫ
-  //  Значения уже нормализованы: прочерков нет, есть "нет".
+  //  Обычные колонки + отдельный фильтр "Есть/Нет" для задач.
   // ==================================================================
   function buildFilterDefinitions() {
     const defs = [];
 
+    // --- Обычные фильтры по колонкам-фильтрам ---
     filterColumns.forEach(col => {
       const unique = new Set();
       songsData.forEach(song => {
@@ -857,6 +867,20 @@
         options: options
       });
     });
+
+    // --- Фильтр по задачам: "Есть / Нет" ---
+    // Добавляем ВСЕГДА, если колонка-задача найдена.
+    if (taskColumn) {
+      defs.push({
+        key: '__task__',
+        label: taskColumn.label,
+        options: [
+          { value: null, label: 'Все' },
+          { value: 'есть', label: 'Есть' },
+          { value: NO_VALUE_LABEL, label: 'Нет', isNoValue: true }
+        ]
+      });
+    }
 
     return defs;
   }
@@ -899,12 +923,29 @@
     return String(value) === filterValue;
   }
 
+  // Есть ли у песни задача (непустая и не "нет")
+  function songHasTask(song) {
+    if (!taskColumn) return false;
+    const v = song[taskColumn.key];
+    return v != null && v !== NO_VALUE_LABEL && String(v).trim() !== '';
+  }
+
   function getFilteredSongs() {
     return songsData.filter(song => {
       if (state.search && !song.name.toLowerCase().includes(state.search.toLowerCase())) {
         return false;
       }
       for (const [key, val] of Object.entries(state.filters)) {
+        if (val == null) continue;
+
+        // Виртуальный фильтр по задачам
+        if (key === '__task__') {
+          const hasTask = songHasTask(song);
+          const wantTask = (val === 'есть');
+          if (hasTask !== wantTask) return false;
+          continue;
+        }
+
         if (!matchesFilter(song[key], val)) return false;
       }
       return true;
@@ -1233,7 +1274,9 @@
   }
 
   init();
-   window.__debug = {
+
+  // Отладочный доступ (можно удалить в продакшене)
+  window.__debug = {
     columns, songsData, filterColumns, taskColumn,
     filterDefinitions, RAW_TABLE_DATA, NO_VALUE_LABEL
   };
