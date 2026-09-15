@@ -13,17 +13,27 @@
     }
 
     :root {
-      --bg: #fafafa;
+      --bg: #f6f8fb;
+      --bg-gradient: linear-gradient(180deg, #eef3fa 0%, #f6f8fb 320px);
       --surface: #ffffff;
-      --border: #e8e8e8;
-      --text: #1a1a1a;
-      --text-muted: #888;
-      --text-soft: #555;
-      --accent: #1a1a1a;
+      --surface-hover: #f7faff;
+      --border: #e6ecf3;
+      --border-strong: #d4dde9;
+      --text: #16202e;
+      --text-muted: #7a879a;
+      --text-soft: #4a5566;
+      --accent: #2b5bd7;
+      --accent-soft: #eaf0ff;
+      --shadow-sm: 0 1px 2px rgba(20, 30, 50, 0.04);
+      --shadow-md: 0 4px 16px rgba(20, 30, 50, 0.06);
+      --shadow-lg: 0 12px 32px rgba(20, 30, 50, 0.12);
     }
 
     body {
       background: var(--bg);
+      background-image: var(--bg-gradient);
+      background-repeat: no-repeat;
+      background-size: 100% 400px;
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       font-size: 15px;
@@ -37,26 +47,50 @@
       margin: 0 auto;
     }
 
+    /* ============ ЗАГОЛОВОК ============ */
     .header {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       justify-content: space-between;
-      margin-bottom: 20px;
-      padding: 0 2px;
+      margin-bottom: 18px;
+      padding: 4px 4px 0;
     }
 
     .header h1 {
-      font-size: 1.15rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #1e3c82 0%, #2b5bd7 60%, #4a7eeb 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header h1::before {
+      content: '';
+      width: 8px;
+      height: 22px;
+      border-radius: 4px;
+      background: linear-gradient(180deg, #2b5bd7, #7ba3ff);
+      -webkit-text-fill-color: initial;
+      flex-shrink: 0;
     }
 
     .header .count {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
       font-variant-numeric: tabular-nums;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 500;
     }
 
+    /* ============ ПОИСК ============ */
     .search {
       position: relative;
       margin-bottom: 14px;
@@ -64,42 +98,49 @@
 
     .search input {
       width: 100%;
-      padding: 10px 14px 10px 34px;
+      padding: 11px 14px 11px 36px;
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 12px;
       background: var(--surface);
       font-size: 0.95rem;
       color: var(--text);
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, box-shadow 0.15s;
       font-family: inherit;
+      box-shadow: var(--shadow-sm);
     }
 
     .search input:focus {
-      border-color: #bbb;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
     }
 
     .search input::placeholder {
-      color: #aaa;
+      color: #9aa6b6;
     }
 
     .search::before {
       content: '';
       position: absolute;
-      left: 12px;
+      left: 13px;
       top: 50%;
-      width: 14px;
-      height: 14px;
+      width: 15px;
+      height: 15px;
       transform: translateY(-50%);
-      background: #aaa;
+      background: #9aa6b6;
       -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") center/contain no-repeat;
       mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") center/contain no-repeat;
       pointer-events: none;
+      transition: background 0.15s;
     }
 
-    /* Фильтры */
+    .search:focus-within::before {
+      background: var(--accent);
+    }
+
+    /* ============ ФИЛЬТРЫ ============ */
     .filters {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -108,18 +149,30 @@
     .filter-group {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
     .filter-label {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--text-muted);
+      letter-spacing: 0.07em;
+      color: var(--text-soft);
       min-width: 60px;
       flex-shrink: 0;
-      font-weight: 500;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .filter-label::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--col-color, #ccc);
+      flex-shrink: 0;
     }
 
     .chips {
@@ -137,41 +190,54 @@
       font-size: 0.82rem;
       color: var(--text-soft);
       cursor: pointer;
-      transition: all 0.12s;
+      transition: all 0.14s;
       user-select: none;
       font-family: inherit;
+      font-weight: 500;
+      box-shadow: var(--shadow-sm);
     }
 
     .chip:hover {
-      border-color: #ccc;
+      border-color: var(--border-strong);
+      color: var(--text);
     }
 
     .chip.active {
       background: var(--accent);
       border-color: var(--accent);
       color: #fff;
+      box-shadow: 0 2px 8px rgba(43, 91, 215, 0.28);
+    }
+
+    .chip.active[data-col-color] {
+      background: var(--col-color);
+      border-color: var(--col-color);
+      box-shadow: 0 2px 8px var(--col-shadow, rgba(43, 91, 215, 0.28));
     }
 
     .chip.reset {
       color: var(--text-muted);
       border-style: dashed;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    .chip.reset:hover {
+      color: #c62828;
+      border-color: #c62828;
     }
 
     .reset-row {
       display: flex;
       justify-content: flex-end;
-      margin-top: -6px;
+      margin-top: -4px;
     }
 
-    /* Список */
+    /* ============ СПИСОК ============ */
     .list {
       display: flex;
       flex-direction: column;
-      gap: 1px;
-      background: var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid var(--border);
+      gap: 8px;
     }
 
     .song {
@@ -181,50 +247,77 @@
       flex-direction: column;
       gap: 6px;
       cursor: pointer;
-      transition: background 0.12s;
+      transition: transform 0.12s, box-shadow 0.12s, background 0.12s;
       position: relative;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .song::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--col-color, transparent);
+      opacity: 0.85;
     }
 
     .song:hover {
-      background: #fafcff;
+      box-shadow: var(--shadow-md);
+      background: var(--surface-hover);
     }
 
     .song:active {
-      background: #f2f5f9;
+      transform: scale(0.995);
     }
 
     .song::after {
       content: '';
       position: absolute;
-      right: 14px;
+      right: 16px;
       top: 50%;
       transform: translateY(-50%) rotate(45deg);
       width: 6px;
       height: 6px;
-      border-top: 1.5px solid #c5c5c5;
-      border-right: 1.5px solid #c5c5c5;
+      border-top: 1.5px solid #c0cad8;
+      border-right: 1.5px solid #c0cad8;
       pointer-events: none;
+      transition: border-color 0.12s;
+    }
+
+    .song:hover::after {
+      border-color: var(--accent);
     }
 
     .song-top {
       display: flex;
       align-items: baseline;
       gap: 10px;
-      padding-right: 20px;
+      padding-right: 22px;
     }
 
     .song-num {
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
       font-variant-numeric: tabular-nums;
-      min-width: 18px;
+      min-width: 22px;
+      height: 22px;
       flex-shrink: 0;
-      padding-top: 1px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #f0f4fa;
+      border-radius: 7px;
+      font-weight: 600;
     }
 
     .song-name {
       font-size: 1rem;
-      font-weight: 500;
+      font-weight: 600;
       color: var(--text);
       letter-spacing: -0.005em;
       word-break: break-word;
@@ -234,60 +327,70 @@
     .song-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px 6px;
-      padding-left: 28px;
-      padding-right: 20px;
+      gap: 4px 10px;
+      padding-left: 32px;
+      padding-right: 22px;
       font-size: 0.8rem;
-      color: var(--text-muted);
+      color: var(--text-soft);
     }
 
     .tag {
       display: inline-flex;
       align-items: center;
-      gap: 3px;
+      gap: 5px;
       white-space: nowrap;
     }
 
-    .tag + .tag::before {
-      content: '·';
-      margin-right: 6px;
-      color: #ccc;
+    /* «Нет» — приглушённый тег */
+    .tag.no-value {
+      color: var(--text-muted);
+      opacity: 0.75;
     }
 
     .tag-dot {
       display: inline-block;
-      width: 6px;
-      height: 6px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       flex-shrink: 0;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.9);
     }
 
-    .dot-c0 { background: #ccc; }
-    .dot-c1 { background: #2e7d32; }
-    .dot-c2 { background: #c62828; }
-    .dot-c3 { background: #ef6c00; }
-    .dot-c4 { background: #0277bd; }
-    .dot-c5 { background: #5c6bc0; }
-    .dot-c6 { background: #8e24aa; }
-    .dot-c7 { background: #00838f; }
-    .dot-c8 { background: #6d4c41; }
-    .dot-c9 { background: #ad1457; }
+    .dot-c0 { background: #c8d0dc; }
+    .dot-c1 { background: #2e9e5b; }
+    .dot-c2 { background: #d94b4b; }
+    .dot-c3 { background: #e8942b; }
+    .dot-c4 { background: #3b8fd4; }
+    .dot-c5 { background: #6a6ee0; }
+    .dot-c6 { background: #a051c8; }
+    .dot-c7 { background: #1aa3a3; }
+    .dot-c8 { background: #8d6e63; }
+    .dot-c9 { background: #d63384; }
 
     .song-task {
-      padding-left: 28px;
-      padding-right: 20px;
+      padding-left: 32px;
+      padding-right: 22px;
       font-size: 0.82rem;
       color: var(--text-soft);
       display: flex;
       gap: 6px;
       align-items: flex-start;
-      margin-top: 2px;
+      margin-top: 3px;
+      background: linear-gradient(90deg, #fff8e8 0%, rgba(255,248,232,0.3) 100%);
+      border-left: 2px solid #f0b95b;
+      padding: 6px 10px 6px 12px;
+      margin-left: 32px;
+      margin-right: 22px;
+      border-radius: 6px;
+      line-height: 1.45;
     }
 
     .song-task::before {
-      content: '—';
-      color: #ccc;
+      content: '✎';
+      color: #d99a2b;
       flex-shrink: 0;
+      font-weight: 700;
+      font-size: 0.85rem;
     }
 
     .empty {
@@ -296,22 +399,24 @@
       color: var(--text-muted);
       font-size: 0.9rem;
       background: var(--surface);
-      border-radius: 12px;
-      border: 1px solid var(--border);
+      border-radius: 14px;
+      border: 1px dashed var(--border-strong);
     }
 
     /* ============ МОДАЛЬНАЯ КАРТОЧКА ============ */
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(20, 22, 28, 0.45);
+      background: rgba(15, 25, 45, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
       display: flex;
       align-items: flex-end;
       justify-content: center;
       z-index: 100;
       opacity: 0;
       visibility: hidden;
-      transition: opacity 0.22s ease, visibility 0.22s ease;
+      transition: opacity 0.24s ease, visibility 0.24s ease;
       padding: 0;
     }
 
@@ -326,12 +431,25 @@
       max-width: 560px;
       max-height: 88vh;
       overflow-y: auto;
-      border-radius: 20px 20px 0 0;
-      transform: translateY(20px);
-      transition: transform 0.26s cubic-bezier(0.22, 1, 0.36, 1);
-      padding: 20px 20px 28px;
+      border-radius: 22px 22px 0 0;
+      transform: translateY(24px);
+      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      padding: 22px 20px 28px;
       position: relative;
       -webkit-overflow-scrolling: touch;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .modal::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 4px;
+      border-radius: 2px;
+      background: #d9e0ea;
     }
 
     .modal-overlay.open .modal {
@@ -344,53 +462,64 @@
         padding: 20px;
       }
       .modal {
-        border-radius: 18px;
+        border-radius: 20px;
         max-height: 82vh;
-        padding: 24px 24px 28px;
+        padding: 26px 26px 28px;
       }
+      .modal::before { display: none; }
     }
 
     .modal-close {
       position: absolute;
-      top: 14px;
-      right: 14px;
-      width: 32px;
-      height: 32px;
+      top: 16px;
+      right: 16px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       border: none;
-      background: #f2f2f2;
-      color: #666;
+      background: #f0f4fa;
+      color: #6a7a90;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
+      font-size: 15px;
       font-family: inherit;
-      transition: background 0.12s;
+      transition: background 0.14s, transform 0.14s;
       line-height: 1;
     }
 
     .modal-close:hover {
-      background: #e6e6e6;
+      background: #e2e9f3;
+      color: #2b3a4f;
+    }
+
+    .modal-close:active {
+      transform: scale(0.94);
     }
 
     .modal-num {
-      font-size: 0.75rem;
-      color: var(--text-muted);
+      display: inline-block;
+      font-size: 0.7rem;
+      color: var(--accent);
       font-variant-numeric: tabular-nums;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin-bottom: 6px;
+      margin-bottom: 10px;
+      background: var(--accent-soft);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 700;
     }
 
     .modal-title {
-      font-size: 1.35rem;
-      font-weight: 600;
+      font-size: 1.4rem;
+      font-weight: 700;
       color: var(--text);
-      letter-spacing: -0.015em;
+      letter-spacing: -0.02em;
       line-height: 1.25;
       padding-right: 40px;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
       word-break: break-word;
     }
 
@@ -413,77 +542,109 @@
       color: var(--text-muted);
       min-width: 100px;
       flex-shrink: 0;
-      font-size: 0.82rem;
-      padding-top: 1px;
+      font-size: 0.8rem;
+      padding-top: 2px;
       word-break: break-word;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .detail-label[data-col-color]::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--col-color);
+      flex-shrink: 0;
     }
 
     .detail-value {
       flex: 1;
       color: var(--text);
       word-break: break-word;
+      font-weight: 500;
     }
 
-    .detail-value.muted {
-      color: #aaa;
+    /* «Нет» в карточке — приглушённое */
+    .detail-value.no-value {
+      color: var(--text-muted);
+      font-weight: 400;
     }
 
     .detail-value .tag-dot {
-      margin-right: 6px;
+      margin-right: 7px;
       vertical-align: middle;
       position: relative;
       top: -1px;
     }
 
     .detail-value.task {
-      color: var(--text-soft);
+      color: #7a5a1a;
       font-size: 0.88rem;
       line-height: 1.5;
+      font-weight: 500;
+      background: linear-gradient(90deg, #fff8e8, #fffdf7);
+      border-left: 3px solid #f0b95b;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin-top: 2px;
     }
 
     .modal-actions {
-      margin-top: 20px;
+      margin-top: 22px;
       display: flex;
       gap: 8px;
     }
 
     .btn-nav {
       flex: 1;
-      padding: 10px 14px;
+      padding: 11px 14px;
       border: 1px solid var(--border);
       background: var(--surface);
-      border-radius: 10px;
+      border-radius: 11px;
       font-size: 0.85rem;
       color: var(--text-soft);
       cursor: pointer;
       font-family: inherit;
-      transition: all 0.12s;
+      transition: all 0.14s;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
+      font-weight: 600;
     }
 
     .btn-nav:hover:not(:disabled) {
-      border-color: #ccc;
-      color: var(--text);
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .btn-nav:active:not(:disabled) {
+      transform: scale(0.98);
     }
 
     .btn-nav:disabled {
-      opacity: 0.4;
+      opacity: 0.35;
       cursor: not-allowed;
     }
 
     @media (max-width: 480px) {
-      body { padding: 12px 8px 24px; font-size: 14px; }
-      .header h1 { font-size: 1.05rem; }
-      .filter-label { min-width: 52px; font-size: 0.68rem; }
+      body { padding: 14px 10px 28px; font-size: 14px; }
+      .header h1 { font-size: 1.1rem; }
+      .header .count { font-size: 0.72rem; padding: 3px 8px; }
+      .filter-label { min-width: 52px; font-size: 0.66rem; }
       .chip { padding: 4px 10px; font-size: 0.78rem; }
       .song { padding: 12px 14px; }
       .song-name { font-size: 0.95rem; }
-      .song-meta, .song-task { padding-left: 24px; font-size: 0.75rem; }
+      .song-meta, .song-task { padding-left: 28px; padding-right: 18px; font-size: 0.75rem; }
+      .song-task { margin-left: 28px; margin-right: 18px; }
+      .song-num { min-width: 20px; height: 20px; font-size: 0.68rem; }
       .modal-title { font-size: 1.15rem; }
-      .detail-label { min-width: 84px; font-size: 0.78rem; }
+      .detail-label { min-width: 84px; font-size: 0.76rem; }
+      .modal-num { font-size: 0.66rem; }
     }
   </style>
 </head>
@@ -516,59 +677,57 @@
 (function() {
   // ==================================================================
   //  ДАННЫЕ ТАБЛИЦЫ
-  //  Вставьте таблицу из Excel как есть — разделитель табуляция.
-  //  Первая строка — заголовки. Все колонки обрабатываются автоматически.
-  //
-  //  Специальные заголовки (регистр не важен):
-  //    «№» или «#» или «id»   → номер в списке (не показывается в карточке)
-  //    «песня» / «название»   → название (заголовок карточки, поиск по нему)
-  //    «задачи» / «задача»    → отображается отдельной строкой под именем
-  //    «продолжительность» / «длительность» → в списке не показывается
-  //    остальные              → становятся тегами в списке и фильтрами
   // ==================================================================
-  const RAW_TABLE_DATA = `№	песня	уже выступали	стиль	есть playback	Сделаны	В разработке	Задачи	Продолжительность
-1	Вступление Koff	 - 	тяжелая	 - 	 - 	 - 	сделать	 - 
-2	Mortal combat 	да	тяжелая	да	да	 - 	 - 	 - 
-3	Mission-Bill	 - 	средняя	да	да	 - 	 - 	 - 
-4	Palladio	да	тяжелая	да	да	 - 	 - 	 - 
-5	Ковбойская	 - 	легкая	да	в процессе	 - 	придумать как упростить. Добавить голос в минус	 - 
-6	Accelerate - Alec Koff	 - 	тяжелая	да	да	 - 	подумать про голос поверх. Добавить синт где один бас	 - 
-7	Mr. Claps	да	тяжелая	да	да	 - 	 - 	 - 
-8	Pink Floyd 	 - 	средняя	да	да	 - 	 - 	 - 
-9	Black and white	 - 	средняя	да	да	 - 	 - 	 - 
-10	Yakety Axe	 - 	легкая	да	да	 - 	 - 	 - 
-11	Симфония № 40	да	тяжелая	да	да	 - 	 - 	 - 
-12	Скерцо	да	средняя	да	да	 - 	 - 	 - 
-13	AM 1984 (80-е под зиверт)	 - 	средняя	 - 	 - 	да		 - 
-14	Hellmile - When strings...	 - 	тяжелая	 - 	 - 	да		 - 
-15	Такси	 - 	средняя	 - 	 - 	да		 - 
-16	Dump	 - 	тяжелая	 - 	 - 	да		 - `;
+  const RAW_TABLE_DATA = `№	песня	уже выступали	стиль	есть playback	Сделаны	Задачи	Продолжительность
+1	Вступление Koff	 - 	тяжелая	 - 	 - 	сделать	 - 
+2	Mortal combat 	да	тяжелая	да	да	 - 	 - 
+3	Mission-Bill	 - 	средняя	да	да	 - 	 - 
+4	Palladio	да	тяжелая	да	да	 - 	 - 
+5	Ковбойская	 - 	легкая	да	в процессе	придумать как упростить. Добавить голос в минус	 - 
+6	Accelerate - Alec Koff	 - 	тяжелая	да	да	подумать про голос поверх. Добавить синт где один бас	 - 
+7	Mr. Claps	да	тяжелая	да	да	 - 	 - 
+8	Pink Floyd 	 - 	средняя	да	да	 - 	 - 
+9	Black and white	 - 	средняя	да	да	 - 	 - 
+10	Yakety Axe	 - 	легкая	да	да	 - 	 - 
+11	Симфония № 40	да	тяжелая	да	да	 - 	 - 
+12	Скерцо	да	средняя	да	да	 - 	 - 
+13	AM 1984 (80-е под зиверт)	 - 	средняя	 - 	 - 	 - 	 - 
+14	Hellmile - When strings...	 - 	тяжелая	 - 	 - 	 - 	 - 
+15	Такси	 - 	средняя	 - 	 - 	 - 	 - 
+16	Dump	 - 	тяжелая	 - 	 - 	 - 	 - `; 
 
   // ==================================================================
-  //  ПАРСЕР ТАБЛИЦЫ С АВТООПРЕДЕЛЕНИЕМ СТОЛБЦОВ
+  //  ПАРСЕР ТАБЛИЦЫ
+  //  Прочерки («-», «—», «–», пусто) превращаются в значение "нет".
   // ==================================================================
-  function normalizeValue(v) { 
-    if (v == null) return null;
+  const NO_VALUE_LABEL = 'нет';
+
+  function isDash(v) {
+    if (v == null) return true;
     const t = String(v).trim();
-    if (t === '' || t === '-' || t === '—' || t === '–') return null;
-    return t;
+    return t === '' || t === '-' || t === '—' || t === '–' || t === '−';
+  }
+
+  // Для полей id/name пустые оставляем как null (чтобы песня пропускалась).
+  // Для всех остальных — возвращаем строку "нет".
+  function normalizeValue(v, keepEmptyAsNull) {
+    if (isDash(v)) return keepEmptyAsNull ? null : NO_VALUE_LABEL;
+    return String(v).trim();
   }
 
   function normalizeHeader(h) {
     return String(h || '').trim().toLowerCase();
   }
 
-  // Определяем роль колонки по её заголовку
   function detectRole(header) {
     const h = normalizeHeader(header);
     if (['№', '#', 'id', 'номер'].includes(h)) return 'id';
     if (['песня', 'название', 'name', 'композиция'].includes(h)) return 'name';
     if (['задачи', 'задача', 'task', 'заметки'].includes(h)) return 'task';
     if (['продолжительность', 'длительность', 'duration', 'время'].includes(h)) return 'duration';
-    return 'filter'; // всё остальное — обычная колонка-фильтр/тег
+    return 'filter';
   }
 
-  // Формируем «человеческое» имя колонки из заголовка
   function prettifyHeader(h) {
     const t = String(h || '').trim();
     if (!t) return '—';
@@ -579,20 +738,18 @@
     const lines = raw.replace(/\r\n?/g, '\n').split('\n').filter(line => line.trim() !== '');
     if (lines.length < 2) return { columns: [], songs: [] };
 
-    // Заголовки
     const headerCells = lines[0].split('\t');
     const columns = headerCells.map((h, i) => {
       const label = String(h || '').trim() || `Колонка ${i + 1}`;
       return {
         index: i,
-        key: 'col_' + i,           // внутренний ключ
+        key: 'col_' + i,
         label: prettifyHeader(label),
         rawLabel: label,
-        role: detectRole(label)    // id | name | task | duration | filter
+        role: detectRole(label)
       };
     });
 
-    // Песни
     const songs = [];
     for (const line of lines.slice(1)) {
       const cells = line.split('\t');
@@ -600,12 +757,13 @@
 
       columns.forEach(col => {
         const rawVal = cells[col.index];
-        const val = normalizeValue(rawVal);
+        // id и name могут быть пустыми (null) — остальное → "нет"
+        const keepNull = (col.role === 'id' || col.role === 'name');
+        const val = normalizeValue(rawVal, keepNull);
         song[col.key] = val;
         song.__cells.push(val);
       });
 
-      // Определяем id и name
       const idCol = columns.find(c => c.role === 'id');
       const nameCol = columns.find(c => c.role === 'name');
 
@@ -616,7 +774,7 @@
       }
       let name = '';
       if (nameCol) name = song[nameCol.key] || '';
-      if (!name) continue; // без названия — пропускаем
+      if (!name) continue;
 
       song.id = id;
       song.name = name;
@@ -628,44 +786,70 @@
 
   const { columns, songs: songsData } = parseRawTable(RAW_TABLE_DATA);
 
-  // Колонки-фильтры (то, что реально может стать чипом)
   const filterColumns = columns.filter(c => c.role === 'filter');
-  // Колонка-задача (если есть)
   const taskColumn = columns.find(c => c.role === 'task');
-  // Колонка-название (для поиска)
   const nameColumn = columns.find(c => c.role === 'name');
-  // Колонка-id
   const idColumn = columns.find(c => c.role === 'id');
 
   // ==================================================================
-  //  ДИНАМИЧЕСКИЕ ФИЛЬТРЫ ПО ЗНАЧЕНИЯМ
+  //  ПАЛИТРА ЦВЕТОВ ДЛЯ КОЛОНОК
+  // ==================================================================
+  const COLUMN_PALETTE = [
+    { dotClass: 'dot-c1', css: '#2e9e5b', soft: '#e6f6ec', shadow: 'rgba(46,158,91,0.28)' },
+    { dotClass: 'dot-c2', css: '#d94b4b', soft: '#fdecec', shadow: 'rgba(217,75,75,0.28)' },
+    { dotClass: 'dot-c3', css: '#e8942b', soft: '#fff2e0', shadow: 'rgba(232,148,43,0.28)' },
+    { dotClass: 'dot-c4', css: '#3b8fd4', soft: '#e6f1fb', shadow: 'rgba(59,143,212,0.28)' },
+    { dotClass: 'dot-c5', css: '#6a6ee0', soft: '#eeefff', shadow: 'rgba(106,110,224,0.28)' },
+    { dotClass: 'dot-c6', css: '#a051c8', soft: '#f6ebfb', shadow: 'rgba(160,81,200,0.28)' },
+    { dotClass: 'dot-c7', css: '#1aa3a3', soft: '#e3f6f6', shadow: 'rgba(26,163,163,0.28)' },
+    { dotClass: 'dot-c8', css: '#8d6e63', soft: '#f3eeec', shadow: 'rgba(141,110,99,0.28)' },
+    { dotClass: 'dot-c9', css: '#d63384', soft: '#fce8f2', shadow: 'rgba(214,51,132,0.28)' }
+  ];
+
+  const columnColors = {};
+  filterColumns.forEach((col, i) => {
+    columnColors[col.key] = COLUMN_PALETTE[i % COLUMN_PALETTE.length];
+  });
+
+  function getColumnColor(colKey) {
+    return columnColors[colKey] || COLUMN_PALETTE[0];
+  }
+
+  // ==================================================================
+  //  ДИНАМИЧЕСКИЕ ФИЛЬТРЫ
+  //  Значения уже нормализованы: прочерков нет, есть "нет".
   // ==================================================================
   function buildFilterDefinitions() {
     const defs = [];
 
     filterColumns.forEach(col => {
       const unique = new Set();
-      let hasEmpty = false;
-
       songsData.forEach(song => {
         const v = song[col.key];
-        if (v == null || v === '') {
-          hasEmpty = true;
-        } else {
-          unique.add(String(v));
-        }
+        if (v == null) return;
+        unique.add(String(v));
       });
 
       const values = Array.from(unique);
-      const totalOptions = values.length + (hasEmpty ? 1 : 0);
 
-      // Один вариант и нет пустых — фильтр бесполезен
-      if (totalOptions <= 1) return;
+      // Если всего одно значение — фильтр бесполезен
+      if (values.length <= 1) return;
+
+      // Сортируем: "нет" всегда в конце
+      values.sort((a, b) => {
+        if (a === NO_VALUE_LABEL) return 1;
+        if (b === NO_VALUE_LABEL) return -1;
+        return a.localeCompare(b, 'ru');
+      });
 
       const options = [{ value: null, label: 'Все' }];
-      values.sort((a, b) => a.localeCompare(b, 'ru'));
-      values.forEach(v => options.push({ value: v, label: v.charAt(0).toUpperCase() + v.slice(1) }));
-      if (hasEmpty) options.push({ value: '__empty__', label: '—' });
+      values.forEach(v => {
+        options.push({
+          value: v,
+          label: v === NO_VALUE_LABEL ? NO_VALUE_LABEL : (v.charAt(0).toUpperCase() + v.slice(1)),
+          isNoValue: v === NO_VALUE_LABEL
+        });
+      });
 
       defs.push({
         key: col.key,
@@ -712,7 +896,6 @@
 
   function matchesFilter(value, filterValue) {
     if (filterValue == null) return true;
-    if (filterValue === '__empty__') return value == null || value === '';
     return String(value) === filterValue;
   }
 
@@ -729,46 +912,55 @@
   }
 
   // ==================================================================
-  //  ЦВЕТА ТОЧЕК ДЛЯ КАЖДОЙ КОЛОНКИ
+  //  ЦВЕТА ЗНАЧЕНИЙ ВНУТРИ КОЛОНКИ
+  //  «нет» всегда получает серый (dot-c0).
   // ==================================================================
-  const dotColorMap = {};
+  const valueDotMap = {};
 
-  function buildDotColorMaps() {
+  function buildValueDotMaps() {
     filterColumns.forEach(col => {
       const map = new Map();
+      let colorIdx = 1; // 0 зарезервирован за "нет"
       const seen = new Set();
+
       songsData.forEach(song => {
         const v = song[col.key];
-        const key = (v == null || v === '') ? '__empty__' : String(v);
-        if (!seen.has(key)) {
-          seen.add(key);
-          map.set(key, 'dot-c' + (map.size % 10));
+        if (v == null) return;
+        const key = String(v);
+        if (seen.has(key)) return;
+        seen.add(key);
+        if (key === NO_VALUE_LABEL) {
+          map.set(key, 'dot-c0');
+        } else {
+          map.set(key, 'dot-c' + (colorIdx % 10));
+          colorIdx++;
         }
       });
-      dotColorMap[col.key] = map;
+      valueDotMap[col.key] = map;
     });
   }
-  buildDotColorMaps();
+  buildValueDotMaps();
 
   function dotClass(colKey, value) {
-    const map = dotColorMap[colKey];
+    const map = valueDotMap[colKey];
     if (!map) return 'dot-c0';
-    const k = (value == null || value === '') ? '__empty__' : String(value);
-    return map.get(k) || 'dot-c0';
+    return map.get(String(value)) || 'dot-c0';
   }
 
   // ==================================================================
   //  ТЕГИ ДЛЯ СПИСКА
-  //  Показываем значения колонок-фильтров в виде тегов.
+  //  «нет» показываем серым, но всё равно в теге.
   // ==================================================================
   function buildTags(song) {
     const tags = [];
     filterColumns.forEach(col => {
       const v = song[col.key];
-      if (v == null || v === '') return;
+      if (v == null) return;
+      const isNo = (v === NO_VALUE_LABEL);
       tags.push({
         dot: dotClass(col.key, v),
-        text: v
+        text: v,
+        isNo: isNo
       });
     });
     return tags;
@@ -784,15 +976,21 @@
     el.setAttribute('tabindex', '0');
     el.dataset.songId = song.id;
 
+    if (filterColumns.length > 0) {
+      const firstCol = filterColumns[0];
+      const colColor = getColumnColor(firstCol.key);
+      el.style.setProperty('--col-color', colColor.css);
+    }
+
     const tagsHtml = buildTags(song).map(t =>
-      `<span class="tag"><span class="tag-dot ${t.dot}"></span>${escapeHtml(t.text)}</span>`
+      `<span class="tag${t.isNo ? ' no-value' : ''}"><span class="tag-dot ${t.dot}"></span>${escapeHtml(t.text)}</span>`
     ).join('');
 
-    // Задача (из колонки с ролью task)
     let taskHtml = '';
     if (taskColumn) {
       const taskVal = song[taskColumn.key];
-      if (taskVal != null && taskVal.trim() !== '') {
+      // «нет» в задачах не показываем как задачу
+      if (taskVal != null && taskVal !== NO_VALUE_LABEL && taskVal.trim() !== '') {
         taskHtml = `<div class="song-task">${escapeHtml(taskVal)}</div>`;
       }
     }
@@ -846,8 +1044,11 @@
     filtersContainer.innerHTML = '';
 
     filterDefinitions.forEach(def => {
+      const colColor = getColumnColor(def.key);
+
       const group = document.createElement('div');
       group.className = 'filter-group';
+      group.style.setProperty('--col-color', colColor.css);
 
       const label = document.createElement('span');
       label.className = 'filter-label';
@@ -864,6 +1065,16 @@
         chip.className = 'chip';
         if (state.filters[def.key] === opt.value) chip.classList.add('active');
         chip.textContent = opt.label;
+
+        // Для «нет» — приглушённый вид, даже активный
+        if (opt.isNoValue) chip.dataset.isNo = '1';
+
+        if (opt.value !== null && !opt.isNoValue) {
+          chip.dataset.colColor = '1';
+          chip.style.setProperty('--col-color', colColor.css);
+          chip.style.setProperty('--col-shadow', colColor.shadow);
+        }
+
         chip.addEventListener('click', () => {
           if (opt.value === null) {
             state.filters[def.key] = null;
@@ -902,26 +1113,22 @@
 
   // ==================================================================
   //  МОДАЛЬНОЕ ОКНО
-  //  Показываем ВСЕ колонки, кроме id и name (они в шапке).
   // ==================================================================
-  function valueOrDash(value) {
-    if (value == null || (typeof value === 'string' && value.trim() === '')) {
-      return `<span class="muted">—</span>`;
+  function renderValueHtml(colKey, value) {
+    if (value == null) {
+      return `<span class="detail-value no-value">${NO_VALUE_LABEL}</span>`;
     }
-    return escapeHtml(value);
-  }
-
-  function renderColoredValue(colKey, value) {
-    if (value == null || value === '') {
-      return `<span class="tag-dot dot-c0"></span><span class="muted">нет</span>`;
+    if (value === NO_VALUE_LABEL) {
+      return `<span class="tag-dot dot-c0"></span><span class="no-value">${NO_VALUE_LABEL}</span>`;
     }
     return `<span class="tag-dot ${dotClass(colKey, value)}"></span>${escapeHtml(value)}`;
   }
 
-  function renderDetailRow(label, valueHtml, extraClass = '') {
+  function renderDetailRow(label, valueHtml, extraClass = '', colKey = null) {
+    const colorAttr = colKey ? `data-col-color="1" style="--col-color:${getColumnColor(colKey).css}"` : '';
     return `
       <div class="detail-row">
-        <div class="detail-label">${escapeHtml(label)}</div>
+        <div class="detail-label" ${colorAttr}>${escapeHtml(label)}</div>
         <div class="detail-value ${extraClass}">${valueHtml}</div>
       </div>
     `;
@@ -936,21 +1143,24 @@
       const value = song[col.key];
 
       if (col.role === 'task') {
+        // Задачи: «нет» показываем, но без стилизации под задачу
+        const isNo = value === NO_VALUE_LABEL || value == null;
+        const taskHtml = isNo
+          ? `<span class="no-value">${NO_VALUE_LABEL}</span>`
+          : escapeHtml(value);
         rows.push(`
           <div class="detail-row">
             <div class="detail-label">${escapeHtml(col.label)}</div>
-            <div class="detail-value task">${valueOrDash(value)}</div>
+            <div class="detail-value task">${taskHtml}</div>
           </div>
         `);
       } else if (col.role === 'duration') {
-        rows.push(renderDetailRow(col.label, valueOrDash(value)));
+        rows.push(renderDetailRow(col.label, renderValueHtml(col.key, value), '', col.key));
       } else {
-        // filter-колонка — с цветной точкой
-        rows.push(renderDetailRow(col.label, renderColoredValue(col.key, value)));
+        rows.push(renderDetailRow(col.label, renderValueHtml(col.key, value), '', col.key));
       }
     });
 
-    // Навигация
     const filtered = getFilteredSongs();
     const currentIndex = filtered.findIndex(s => s.id === song.id);
     const prevSong = currentIndex > 0 ? filtered[currentIndex - 1] : null;
